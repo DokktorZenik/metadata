@@ -7,6 +7,7 @@ import com.task_manager.metadata.exception.ResourceNotFoundException;
 import com.task_manager.metadata.repository.OrganizationRepository;
 import com.task_manager.metadata.repository.ProjectRepository;
 import com.task_manager.metadata.repository.UserRepository;
+import com.task_manager.metadata.request.ProjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,17 +28,14 @@ public class ProjectService {
             throw new ResourceNotFoundException("Organization","name", organizationName);
     }
 
-    public Project createProject(String organizationName, Project project){
+    public Project createProject(String organizationName, ProjectRequest project){
         Organization organization = organizationRepository.findByName(organizationName)
                 .orElseThrow(() -> new ResourceNotFoundException("Organization","name", organizationName));
 
-        User owner = usersRepository.findById(project.getOwnerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Such user does not exist"));
-
-        project.setOwnerId(owner.getId());
+        project.setOwnerId(project.getOwnerId());
         project.setOrganizationId(organization.getId());
 
-        return projectRepository.save(project);
+        return projectRepository.save(project.toEntity());
     }
 
     public Project getProjectByName(String organizationName, String projectName){
@@ -50,7 +48,7 @@ public class ProjectService {
         return project;
     }
 
-    public Project updateProject(String organizationName, String projectName, Project newProject){
+    public Project updateProject(String organizationName, String projectName, ProjectRequest newProject){
         Organization organization = organizationRepository.findByName(organizationName)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "name", projectName));
 

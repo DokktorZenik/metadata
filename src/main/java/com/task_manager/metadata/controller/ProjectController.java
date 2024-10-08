@@ -1,6 +1,6 @@
 package com.task_manager.metadata.controller;
 
-import com.task_manager.metadata.entity.Project;
+import com.task_manager.metadata.request.ProjectRequest;
 import com.task_manager.metadata.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ public class ProjectController {
     }
 
     @PostMapping("{name}/projects")
-    public ResponseEntity<?> createProject(@PathVariable("name") String organizationName,@RequestBody Project project){
+    public ResponseEntity<?> createProject(@PathVariable("name") String organizationName,@RequestBody ProjectRequest project){
         return new ResponseEntity<>(projectService.createProject(organizationName, project), HttpStatus.CREATED);
     }
 
@@ -29,7 +29,7 @@ public class ProjectController {
     }
 
     @PutMapping("{organizationName}/projects/{projectName}")
-    public ResponseEntity<?> updateProject(@PathVariable String organizationName,@PathVariable String projectName, @RequestBody Project project){
+    public ResponseEntity<?> updateProject(@PathVariable String organizationName,@PathVariable String projectName, @RequestBody ProjectRequest project){
         return new ResponseEntity<>(projectService.updateProject(organizationName,projectName, project), HttpStatus.OK);
     }
 
