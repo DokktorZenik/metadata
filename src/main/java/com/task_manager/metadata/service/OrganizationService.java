@@ -1,10 +1,8 @@
 package com.task_manager.metadata.service;
 
 import com.task_manager.metadata.entity.Organization;
-import com.task_manager.metadata.entity.User;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
 import com.task_manager.metadata.repository.OrganizationRepository;
-import com.task_manager.metadata.repository.UserRepository;
 import com.task_manager.metadata.request.OrganizationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationService {
     private final OrganizationRepository organizationRepository;
-    private final UserRepository usersRepository;
 
     public List<Organization> getAllOrganizations(){
        return organizationRepository.findAll();
