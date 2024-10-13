@@ -1,6 +1,7 @@
 package com.task_manager.metadata.controller;
 
 import com.task_manager.metadata.entity.Organization;
+import com.task_manager.metadata.request.OrganizationRequest;
 import com.task_manager.metadata.service.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,12 @@ public class OrganizationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrganization(@RequestBody Organization organization){
+    public ResponseEntity<?> createOrganization(@RequestBody OrganizationRequest organization){
         return new ResponseEntity<>(organizationService.createOrganization(organization), HttpStatus.CREATED);
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<?> updateOrganization(@PathVariable("name") String organizationName, @RequestBody Organization updatedOrganization){
+    public ResponseEntity<?> updateOrganization(@PathVariable("name") String organizationName, @RequestBody OrganizationRequest updatedOrganization){
         return new ResponseEntity<>(organizationService.updateOrganization(organizationName, updatedOrganization), HttpStatus.OK);
     }
 

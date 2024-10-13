@@ -1,10 +1,9 @@
 package com.task_manager.metadata.service;
 
 import com.task_manager.metadata.entity.Organization;
-import com.task_manager.metadata.entity.User;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
 import com.task_manager.metadata.repository.OrganizationRepository;
-import com.task_manager.metadata.repository.UserRepository;
+import com.task_manager.metadata.request.OrganizationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,22 +13,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrganizationService {
     private final OrganizationRepository organizationRepository;
-    private final UserRepository usersRepository;
 
     public List<Organization> getAllOrganizations(){
        return organizationRepository.findAll();
     }
 
-    public Organization createOrganization(Organization organization){
+    public Organization createOrganization(OrganizationRequest organization){
         if(organizationRepository.findByName(organization.getName()).isPresent())
             throw new IllegalArgumentException("Organization with name " + organization.getName() + " already exists");
 
-        User owner = usersRepository.findById(organization.getOwnerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Such user does not exist"));
-
-        organization.setOwnerId(owner.getId());
-
-        return organizationRepository.save(organization);
+        return organizationRepository.save(organization.toEntity());
     }
 
     public Organization getOrganization(String name){
@@ -37,7 +30,7 @@ public class OrganizationService {
                 .orElseThrow(()->new ResourceNotFoundException("Organization", "name", name));
     }
 
-    public Organization updateOrganization(String name, Organization updatedOrganization){
+    public Organization updateOrganization(String name, OrganizationRequest updatedOrganization){
         Organization organization = organizationRepository.findByName(name)
                 .orElseThrow(()->new ResourceNotFoundException("Organization", "name", name));
 
