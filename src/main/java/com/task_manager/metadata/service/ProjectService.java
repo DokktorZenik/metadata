@@ -2,11 +2,9 @@ package com.task_manager.metadata.service;
 
 import com.task_manager.metadata.entity.Organization;
 import com.task_manager.metadata.entity.Project;
-import com.task_manager.metadata.entity.User;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
 import com.task_manager.metadata.repository.OrganizationRepository;
 import com.task_manager.metadata.repository.ProjectRepository;
-import com.task_manager.metadata.repository.UserRepository;
 import com.task_manager.metadata.request.ProjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final OrganizationRepository organizationRepository;
-    private final UserRepository usersRepository;
 
     public List<Project> getAllProjectsByOrganizationName(String organizationName){
         //TODO check if user in organization
