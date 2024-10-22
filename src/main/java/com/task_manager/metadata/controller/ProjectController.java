@@ -1,6 +1,7 @@
 package com.task_manager.metadata.controller;
 
-import com.task_manager.metadata.request.ProjectRequest;
+import com.task_manager.metadata.request.CreateProjectRequest;
+import com.task_manager.metadata.request.UpdateProjectRequest;
 import com.task_manager.metadata.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/organizations")
+@RequestMapping("v1/organizations")
 public class ProjectController {
     private final ProjectService projectService;
 
@@ -19,7 +20,7 @@ public class ProjectController {
     }
 
     @PostMapping("{name}/projects")
-    public ResponseEntity<?> createProject(@PathVariable("name") String organizationName,@RequestBody ProjectRequest project){
+    public ResponseEntity<?> createProject(@PathVariable("name") String organizationName,@RequestBody CreateProjectRequest project){
         return new ResponseEntity<>(projectService.createProject(organizationName, project), HttpStatus.CREATED);
     }
 
@@ -29,7 +30,7 @@ public class ProjectController {
     }
 
     @PutMapping("{organizationName}/projects/{projectName}")
-    public ResponseEntity<?> updateProject(@PathVariable String organizationName,@PathVariable String projectName, @RequestBody ProjectRequest project){
+    public ResponseEntity<?> updateProject(@PathVariable String organizationName,@PathVariable String projectName, @RequestBody UpdateProjectRequest project){
         return new ResponseEntity<>(projectService.updateProject(organizationName,projectName, project), HttpStatus.OK);
     }
 

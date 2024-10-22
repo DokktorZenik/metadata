@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
-    List<Tag> findByProjectId(Long id);
-    Optional<Tag> findByIdAndProjectId(Long id, Long projectId);
+    List<Tag> findByOrganizationId(Long id);
+    Optional<Tag> findByIdAndOrganizationId(Long id, Long organizationId);
 }

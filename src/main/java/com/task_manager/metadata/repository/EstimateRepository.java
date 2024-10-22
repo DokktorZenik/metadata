@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EstimateRepository extends JpaRepository<Estimate, Long> {
-    Optional<Estimate> findByIdAndProjectId(Long id, Long projectId);
-    List<Estimate> findByProjectId(Long id);
+    Optional<Estimate> findByIdAndOrganizationId(Long id, Long projectId);
+    List<Estimate> findByOrganizationId(Long id);
+
 }

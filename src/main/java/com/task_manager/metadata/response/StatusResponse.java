@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 public class StatusResponse {
     private Long id;
     private Long orgId;
-    private Long projectId;
     private JsonNode content;
 }

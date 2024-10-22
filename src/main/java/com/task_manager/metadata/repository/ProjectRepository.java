@@ -12,4 +12,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     Optional<Project> findByNameAndOrganizationId(String name, Long id);
     @Query(value = "SELECT p from Project p JOIN Organization o ON p.organizationId = o.id where o.name = :name")
     List<Project> findByOrganizationName(@Param("name") String name);
+    Optional<Project> findByTitleAndOrganizationId(String title, Long id);
 }
