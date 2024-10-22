@@ -9,33 +9,33 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/organizations/{organizationName}/projects/{projectName}/estimates")
+@RequestMapping("v1/organizations/{organizationName}/estimates")
 public class EstimateController {
     private final EstimateService estimateService;
 
     @GetMapping
-    public ResponseEntity<?> getAllEstimates(@PathVariable String organizationName, @PathVariable String projectName){
-        return new ResponseEntity<>(estimateService.getAllEstimates(organizationName, projectName), HttpStatus.OK);
+    public ResponseEntity<?> getAllEstimates(@PathVariable String organizationName){
+        return new ResponseEntity<>(estimateService.getAllEstimates(organizationName), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> createEstimate(@PathVariable String organizationName, @PathVariable String projectName, @RequestBody Estimate estimate){
-        return new ResponseEntity<>(estimateService.createEstimate(organizationName, projectName,estimate), HttpStatus.CREATED);
+    public ResponseEntity<?> createEstimate(@PathVariable String organizationName, @RequestBody Estimate estimate){
+        return new ResponseEntity<>(estimateService.createEstimate(organizationName,estimate), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEstimateById(@PathVariable String organizationName,@PathVariable String projectName,@PathVariable Long id){
-        return new ResponseEntity<>(estimateService.getEstimateById(organizationName, projectName, id), HttpStatus.OK);
+    public ResponseEntity<?> getEstimateById(@PathVariable String organizationName, @PathVariable Long id){
+        return new ResponseEntity<>(estimateService.getEstimateById(organizationName, id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateEstimate(@PathVariable String organizationName,@PathVariable String projectName,@PathVariable Long id, @RequestBody Estimate estimate){
-        return new ResponseEntity<>(estimateService.updateEstimate(organizationName, projectName,id,estimate), HttpStatus.OK);
+    public ResponseEntity<?> updateEstimate(@PathVariable String organizationName, @PathVariable Long id, @RequestBody Estimate estimate){
+        return new ResponseEntity<>(estimateService.updateEstimate(organizationName, id, estimate), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteEstimate(@PathVariable String organizationName,@PathVariable String projectName,@PathVariable Long id){
-        estimateService.deleteEstimate(organizationName, projectName, id);
+    public ResponseEntity<?> deleteEstimate(@PathVariable String organizationName, @PathVariable Long id){
+        estimateService.deleteEstimate(organizationName, id);
         return new ResponseEntity<>("Estimate was successfully deleted", HttpStatus.OK);
     }
 }

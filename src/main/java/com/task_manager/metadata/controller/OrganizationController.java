@@ -1,7 +1,7 @@
 package com.task_manager.metadata.controller;
 
-import com.task_manager.metadata.entity.Organization;
-import com.task_manager.metadata.request.OrganizationRequest;
+import com.task_manager.metadata.request.CreateOrganizationRequest;
+import com.task_manager.metadata.request.UpdateOrganizationRequest;
 import com.task_manager.metadata.service.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/organizations")
+@RequestMapping("v1/organizations")
 @RequiredArgsConstructor
 public class OrganizationController {
     private final OrganizationService organizationService;
@@ -25,12 +25,12 @@ public class OrganizationController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrganization(@RequestBody OrganizationRequest organization){
+    public ResponseEntity<?> createOrganization(@RequestBody CreateOrganizationRequest organization){
         return new ResponseEntity<>(organizationService.createOrganization(organization), HttpStatus.CREATED);
     }
 
     @PutMapping("{name}")
-    public ResponseEntity<?> updateOrganization(@PathVariable("name") String organizationName, @RequestBody OrganizationRequest updatedOrganization){
+    public ResponseEntity<?> updateOrganization(@PathVariable("name") String organizationName, @RequestBody UpdateOrganizationRequest updatedOrganization){
         return new ResponseEntity<>(organizationService.updateOrganization(organizationName, updatedOrganization), HttpStatus.OK);
     }
 

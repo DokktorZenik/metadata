@@ -1,6 +1,5 @@
 package com.task_manager.metadata.request;
 
-import com.task_manager.metadata.entity.Organization;
 import com.task_manager.metadata.entity.Project;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectRequest {
+public class CreateProjectRequest {
     private String title;
     private String name;
     private Long ownerId;

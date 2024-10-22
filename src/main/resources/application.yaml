@@ -10,10 +10,10 @@ spring:
     hibernate:
       ddl-auto: update
 
-
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
+
 server:
   port: 8080

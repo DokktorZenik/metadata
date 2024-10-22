@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrganizationRequest {
+public class CreateOrganizationRequest {
     private String title;
     private String name;
     private Long ownerId;
