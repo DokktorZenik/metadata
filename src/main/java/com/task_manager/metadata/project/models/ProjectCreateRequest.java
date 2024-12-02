@@ -18,7 +18,7 @@ public class ProjectCreateRequest {
                 .title(title)
                 .name(name)
                 .ownerId(ownerId)
-                .organizationId(orgId)
+                .orgId(orgId)
                 .build();
     }
 }
