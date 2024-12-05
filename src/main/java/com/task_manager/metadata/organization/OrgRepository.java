@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface OrgRepository extends JpaRepository<OrgEntity,Long> {
     Optional<OrgEntity> findByName(String name);
 
-    Void deleteByName(String name);
+    Long deleteByName(String name);
 
     @Modifying
     @Query("update OrgEntity org set org.name = :newName, org.title = :title where org.name = :oldName")

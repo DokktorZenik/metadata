@@ -1,5 +1,8 @@
 package com.task_manager.metadata.project;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.slugify.Slugify;
 import com.task_manager.metadata.organization.OrgService;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
@@ -7,13 +10,19 @@ import com.task_manager.metadata.project.models.ProjectCreateRequest;
 import com.task_manager.metadata.project.models.ProjectEntity;
 import com.task_manager.metadata.project.models.ProjectUpdateRequest;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
+    private final ObjectMapper objectMapper;
 
     private final ProjectRepository projectRepository;
 
@@ -21,9 +30,31 @@ public class ProjectService {
 
     private final static Slugify slugify = new Slugify().withUnderscoreSeparator(true).withCustomReplacement("-", "_");
 
+    private ObjectNode projectJsonObject;
+
+    private final RestClient restClient;
+
+    //    @Value("${user.service.url}")
+    private final String userServiceUrl = "http://localhost:8083";
+
+    public void sendRequest(Long projectId, Long ownerId, String endpoint, String method){
+
+        projectJsonObject = objectMapper.createObjectNode();
+
+        projectJsonObject.put("projectId", projectId);
+        projectJsonObject.put("ownerId", ownerId);
+
+        if(method.equals("POST")) {
+            ObjectNode retrieve = restClient.post().uri(userServiceUrl + endpoint).body(projectJsonObject).retrieve().toEntity(ObjectNode.class).getBody();
+        }
+        else{
+            ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/project/" + projectId + "/owner/" + ownerId).retrieve().toEntity(ObjectNode.class).getBody();
+        }
+    }
+
 
     private ProjectEntity getProjectByNameAndOrganizationId(String projectName, Long id) {
-        return projectRepository.findByNameAndOrganizationId(projectName, id)
+        return projectRepository.findByNameAndOrgId(projectName, id)
                 .orElseThrow(() -> new ResourceNotFoundException("Project", "name", projectName));
     }
 
@@ -39,7 +70,7 @@ public class ProjectService {
 
         Long orgId = orgService.getOrgIdByName(orgName);
 
-        projectRepository.findByTitleAndOrganizationId(projectCreateRequest.getTitle(), orgId)
+        projectRepository.findByTitleAndOrgId(projectCreateRequest.getTitle(), orgId)
                 .ifPresent(existingProjectEntity -> {
                     throw new IllegalArgumentException("Project with title '" + projectCreateRequest.getTitle() + "' already exists in this organization.");
                 });
@@ -49,8 +80,11 @@ public class ProjectService {
 
         String projectName = slugify.slugify(projectCreateRequest.getTitle());
 
-        return projectRepository.save(projectCreateRequest.toEntity(orgId, projectName));
+        ProjectEntity createdProject = projectRepository.save(projectCreateRequest.toEntity(orgId, projectName));
 
+        sendRequest(createdProject.getId(), createdProject.getOwnerId(), "/v1/project/create", "POST");
+
+        return createdProject;
     }
 
     public ProjectEntity getProjectByName(String orgName, String projectName) {
@@ -77,6 +111,8 @@ public class ProjectService {
         ProjectEntity projectEntity = getProjectByNameAndOrganizationId(projectName, orgId);
 
         projectRepository.delete(projectEntity);
+
+        sendRequest(projectEntity.getId(), projectEntity.getOwnerId(), "/v1/project/delete","DELETE");
     }
 
 }
