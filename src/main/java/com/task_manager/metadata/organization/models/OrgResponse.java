@@ -9,5 +9,7 @@ public class OrgResponse {
 
     private Long id;
 
+    private String name;
+
     private String title;
 }

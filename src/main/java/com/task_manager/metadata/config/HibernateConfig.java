@@ -4,12 +4,11 @@ import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestClient;
 
 @Configuration
-public class RestClientConfig {
+public class HibernateConfig {
     @Bean
-    public RestClient restClient(){
-        return RestClient.create();
+    public PhysicalNamingStrategy physicalNamingStrategy(){
+        return new PhysicalNamingStrategyStandardImpl();
     }
 }

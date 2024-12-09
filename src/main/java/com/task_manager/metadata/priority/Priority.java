@@ -12,7 +12,7 @@ public class Priority {
     private Long id;
 
     @Column(nullable = false)
-    private Long organizationId;
+    private Long orgId;
 
     @Column(nullable = false)
     private String title;

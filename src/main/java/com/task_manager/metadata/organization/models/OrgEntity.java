@@ -28,7 +28,7 @@ public class OrgEntity {
     private Long ownerId;
 
     public OrgResponse toResponse() {
-        return new OrgResponse(id, title);
+        return new OrgResponse(id, name, title);
     }
 
 }

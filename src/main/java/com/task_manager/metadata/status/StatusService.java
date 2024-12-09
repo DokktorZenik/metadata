@@ -22,7 +22,7 @@ public class StatusService {
                 .put("title", status.getTitle())
                 .put("color", status.getColor());
 
-        return new StatusResponse(status.getId(), status.getOrganizationId(), content);
+        return new StatusResponse(status.getId(), status.getOrgId(), content);
     }
 
     private OrgEntity getOrganizationByName(String organizationName) {
@@ -33,7 +33,7 @@ public class StatusService {
     public StatusResponse createStatus(String organizationName, Status status){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        status.setOrganizationId(orgEntity.getId());
+        status.setOrgId(orgEntity.getId());
 
         return mapToStatusResponse(statusRepository.save(status));
     }
@@ -41,21 +41,21 @@ public class StatusService {
     public List<StatusResponse> getAllStatuses(String organizationName){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        return statusRepository.findByOrganizationId(orgEntity.getId())
+        return statusRepository.findByOrgId(orgEntity.getId())
                 .stream().map(priority -> mapToStatusResponse(priority)).toList();
     }
 
     public StatusResponse getStatusById(String organizationName, Long id){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        return mapToStatusResponse(statusRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        return mapToStatusResponse(statusRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Status", "id", id)));
     }
 
     public StatusResponse updateStatus(String organizationName, Long id, Status status){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        Status updatedStatus = statusRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        Status updatedStatus = statusRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Status", "id", id));
 
         updatedStatus.setTitle(status.getTitle());
@@ -68,7 +68,7 @@ public class StatusService {
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
 
-        Status status = statusRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        Status status = statusRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Status", "id", id));
 
         statusRepository.delete(status);

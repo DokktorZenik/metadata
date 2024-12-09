@@ -1,5 +1,5 @@
-FROM openjdk:17-alpine
+FROM openjdk:17-jdk-alpine
 WORKDIR /app
+COPY target/metadata-0.0.1-SNAPSHOT.jar /app/app.jar
 EXPOSE 8080
-COPY ./target/metadata-0.0.1-SNAPSHOT.jar /app/metadata.jar
-CMD ["java", "-jar", "metadata.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]

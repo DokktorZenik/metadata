@@ -35,6 +35,7 @@ public class ProjectEntity {
                 .builder()
                 .id(id)
                 .title(title)
+                .name(name)
                 .orgId(orgId)
                 .build();
     }

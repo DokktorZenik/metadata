@@ -11,11 +11,13 @@ import com.task_manager.metadata.project.models.ProjectEntity;
 import com.task_manager.metadata.project.models.ProjectUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -34,8 +36,8 @@ public class ProjectService {
 
     private final RestClient restClient;
 
-    //    @Value("${user.service.url}")
-    private final String userServiceUrl = "http://localhost:8083";
+    @Value("${user.service.url}")
+    private String userServiceUrl;
 
     public void sendRequest(Long projectId, Long ownerId, String endpoint, String method){
 
@@ -82,7 +84,7 @@ public class ProjectService {
 
         ProjectEntity createdProject = projectRepository.save(projectCreateRequest.toEntity(orgId, projectName));
 
-        sendRequest(createdProject.getId(), createdProject.getOwnerId(), "/v1/project/create", "POST");
+//        sendRequest(createdProject.getId(), createdProject.getOwnerId(), "/v1/project/create", "POST");
 
         return createdProject;
     }
@@ -112,7 +114,7 @@ public class ProjectService {
 
         projectRepository.delete(projectEntity);
 
-        sendRequest(projectEntity.getId(), projectEntity.getOwnerId(), "/v1/project/delete","DELETE");
+//        sendRequest(projectEntity.getId(), projectEntity.getOwnerId(), "/v1/project/delete","DELETE");
     }
 
 }

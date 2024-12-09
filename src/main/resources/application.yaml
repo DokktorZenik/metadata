@@ -1,10 +1,6 @@
 spring:
   application:
     name: metadata
-  user:
-    service:
-      url: "http://localhost:8083"
-
   jpa:
     properties:
       hibernate:
@@ -12,9 +8,9 @@ spring:
     show-sql: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/metadata
-    username: postgres
-    password: 12345
+    url: ${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
 
 server:
   port: 8080
@@ -31,3 +27,7 @@ management:
     metrics:
       export:
         enabled: true
+
+user:
+  service:
+    url: ${USER_URL}

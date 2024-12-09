@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/organizations")
+@RequestMapping("v1/organizations/{name}")
 public class ProjectController {
 
     private final ProjectService projectService;
 
-    @GetMapping("{name}/projects")
-    public ResponseEntity<ProjectsResponse> getAllProjectsByOrganizationName(@PathVariable("name") String organizationName){
+    @GetMapping("/projects")
+    public ResponseEntity<ProjectsResponse> getAllProjectsByOrganizationId(@PathVariable("name") String organizationName){
         return ResponseEntity
                 .ok(new ProjectsResponse(
                         projectService
@@ -28,31 +28,31 @@ public class ProjectController {
                                 .toList()));
     }
 
-    @PostMapping("{name}/projects")
+    @PostMapping("/projects")
     public ResponseEntity<ProjectResponse> createProject(@PathVariable("name") String organizationName, @RequestBody ProjectCreateRequest project){
         return ResponseEntity
                 .status(201)
                 .body(projectService.createProject(organizationName, project).toResponse());
     }
 
-    @GetMapping("{organizationName}/projects/{projectName}")
-    public ResponseEntity<ProjectResponse> getProjectByName(@PathVariable String organizationName,@PathVariable String projectName){
+    @GetMapping("/projects/{projectName}")
+    public ResponseEntity<ProjectResponse> getProjectByName(@PathVariable String name,@PathVariable String projectName){
         return ResponseEntity.ok(projectService
-                .getProjectByName(organizationName,projectName)
+                .getProjectByName(name,projectName)
                 .toResponse());
     }
 
-    @PutMapping("{organizationName}/projects/{projectName}")
-    public ResponseEntity<ProjectResponse> updateProject(@PathVariable String organizationName,@PathVariable String projectName, @RequestBody ProjectUpdateRequest project){
+    @PutMapping("/projects/{projectName}")
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable String name,@PathVariable String projectName, @RequestBody ProjectUpdateRequest project){
         return ResponseEntity.ok(
                 projectService
-                        .updateProject(organizationName,projectName, project)
+                        .updateProject(name,projectName, project)
                         .toResponse());
     }
 
-    @DeleteMapping("{organizationName}/projects/{projectName}")
-    public ResponseEntity<String> deleteProject(@PathVariable String organizationName,@PathVariable String projectName){
-        projectService.deleteProject(organizationName,projectName);
+    @DeleteMapping("/projects/{projectName}")
+    public ResponseEntity<String> deleteProject(@PathVariable String name,@PathVariable String projectName){
+        projectService.deleteProject(name,projectName);
         return new ResponseEntity<>("Project was successfully deleted", HttpStatus.OK);
     }
 }

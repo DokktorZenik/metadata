@@ -22,7 +22,7 @@ public class PriorityService {
                 .put("title", priority.getTitle())
                 .put("color", priority.getColor());
 
-        return new PriorityResponse(priority.getId(), priority.getOrganizationId(), content);
+        return new PriorityResponse(priority.getId(), priority.getOrgId(), content);
     }
 
     private OrgEntity getOrganizationByName(String organizationName) {
@@ -33,7 +33,7 @@ public class PriorityService {
     public PriorityResponse createPriority(String organizationName, Priority priority){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        priority.setOrganizationId(orgEntity.getId());
+        priority.setOrgId(orgEntity.getId());
 
         return mapToPriorityResponse(priorityRepository.save(priority));
     }
@@ -41,21 +41,21 @@ public class PriorityService {
     public List<PriorityResponse> getAllPriorities(String organizationName){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        return priorityRepository.findByOrganizationId(orgEntity.getId())
+        return priorityRepository.findByOrgId(orgEntity.getId())
                 .stream().map(priority -> mapToPriorityResponse(priority)).toList();
     }
 
     public PriorityResponse getPriorityById(String organizationName, Long id){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        return mapToPriorityResponse(priorityRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        return mapToPriorityResponse(priorityRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Priority", "id", id)));
     }
 
     public PriorityResponse updatePriority(String organizationName, Long id, Priority priority){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        Priority updatedPriority = priorityRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        Priority updatedPriority = priorityRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Priority", "id", id));
 
         updatedPriority.setTitle(priority.getTitle());
@@ -67,7 +67,7 @@ public class PriorityService {
     public void deletePriority(String organizationName, Long id){
         OrgEntity orgEntity = getOrganizationByName(organizationName);
 
-        Priority priority = priorityRepository.findByIdAndOrganizationId(id, orgEntity.getId())
+        Priority priority = priorityRepository.findByIdAndOrgId(id, orgEntity.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Priority", "id", id));
 
         priorityRepository.delete(priority);

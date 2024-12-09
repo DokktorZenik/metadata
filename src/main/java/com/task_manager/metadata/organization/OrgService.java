@@ -10,12 +10,14 @@ import com.task_manager.metadata.organization.models.OrgEntity;
 import com.task_manager.metadata.organization.models.OrgUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +27,8 @@ import java.util.Optional;
 public class OrgService {
     private final RestClient restClient;
     private ObjectNode organizationJsonObject;
-    private final String userServiceUrl = "http://localhost:8083";
+    @Value("${user.service.url}")
+    private  String userServiceUrl;
     private final ObjectMapper objectMapper;
 
     private final OrgRepository orgRepository;
@@ -76,7 +79,7 @@ public class OrgService {
         OrgEntity savedOrganization = orgRepository.save(
                 request.toEntity(name));
 
-        sendRequest(savedOrganization.getId(), savedOrganization.getOwnerId(), "/v1/organization/create", "POST");
+//        sendRequest(savedOrganization.getId(), savedOrganization.getOwnerId(), "/v1/organization/create", "POST");
 
         return savedOrganization;
     }
@@ -96,7 +99,7 @@ public class OrgService {
 
         orgRepository.deleteByName(name);
 
-        sendRequest(organization.getId(), organization.getOwnerId(), "/v1/organization/delete","DELETE");
+//        sendRequest(organization.getId(), organization.getOwnerId(), "/v1/organization/delete","DELETE");
     }
 
 }
