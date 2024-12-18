@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class OrgController {
     private final OrgService organizationService;
 
-    @GetMapping
-    public ResponseEntity<OrgsResponse> getAllOrganizations(){
+    @GetMapping({"/user/{userId}"})
+    public ResponseEntity<OrgsResponse> getUserOrganizations(@PathVariable Long userId){
         return ResponseEntity.ok(new OrgsResponse(
                 organizationService
-                        .getAllOrganizations()
+                        .getUserOrganizations(userId)
                         .stream()
                         .map(OrgEntity::toResponse)
                         .toList()

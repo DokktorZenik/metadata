@@ -2,23 +2,28 @@ package com.task_manager.metadata.organization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.slugify.Slugify;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
 import com.task_manager.metadata.organization.models.OrgCreateRequest;
 import com.task_manager.metadata.organization.models.OrgEntity;
 import com.task_manager.metadata.organization.models.OrgUpdateRequest;
+import com.task_manager.metadata.project.ProjectRepository;
+import com.task_manager.metadata.project.models.ProjectEntity;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +37,7 @@ public class OrgService {
     private final ObjectMapper objectMapper;
 
     private final OrgRepository orgRepository;
+    private final ProjectRepository projectRepository;
 
     private final static Slugify slugify = new Slugify().withUnderscoreSeparator(true).withCustomReplacement("-", "_");
 
@@ -42,11 +48,29 @@ public class OrgService {
         organizationJsonObject.put("ownerId", ownerId);
 
         if(method.equals("POST")) {
-            ObjectNode retrieve = restClient.post().uri(userServiceUrl + endpoint).body(organizationJsonObject).retrieve().toEntity(ObjectNode.class).getBody();
+            ResponseEntity<ObjectNode> retrieve = restClient.post().uri(userServiceUrl + endpoint).body(organizationJsonObject).retrieve().toEntity(ObjectNode.class);
         }
         else{
-            ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/organization/" + organizationId + "/owner/" + ownerId).retrieve().toEntity(ObjectNode.class).getBody();
+            ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/organization/" + organizationId).retrieve().toEntity(ObjectNode.class).getBody();
         }
+    }
+
+    public void deleteProject(Long projectId, String endpoint){
+
+        ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/project/" + projectId).retrieve().toEntity(ObjectNode.class).getBody();
+    }
+
+    public List<OrgEntity> getUserOrganizations(Long userId){
+        ObjectNode result =  restClient.get().uri(userServiceUrl + "/v1/organization/" + userId).retrieve().toEntity(ObjectNode.class).getBody();
+        JsonNode roles = result.get("_embedded").get("roles");
+        List<OrgEntity> orgs = new ArrayList<>();
+        if(roles.isArray()){
+            for(JsonNode role : roles){
+                orgs.add(orgRepository.findById(role.get("organizationId").asLong()).orElse(null));
+            }
+        }
+
+        return orgs;
     }
 
 
@@ -79,7 +103,7 @@ public class OrgService {
         OrgEntity savedOrganization = orgRepository.save(
                 request.toEntity(name));
 
-//        sendRequest(savedOrganization.getId(), savedOrganization.getOwnerId(), "/v1/organization/create", "POST");
+        sendRequest(savedOrganization.getId(), savedOrganization.getOwnerId(), "/v1/organization/create", "POST");
 
         return savedOrganization;
     }
@@ -96,10 +120,18 @@ public class OrgService {
     @Transactional
     public void deleteOrganization(String name){
         OrgEntity organization = orgRepository.findByName(name).orElseThrow();
+        List<ProjectEntity> projects = projectRepository.findAllByOrgId(organization.getId());
+
+        projectRepository.deleteAllInBatch(projects);
+
+        for (ProjectEntity project: projects){
+            deleteProject(project.getId(), "/v1/project/delete");
+        }
+
 
         orgRepository.deleteByName(name);
 
-//        sendRequest(organization.getId(), organization.getOwnerId(), "/v1/organization/delete","DELETE");
+        sendRequest(organization.getId(), organization.getOwnerId(), "/v1/organization/delete","DELETE");
     }
 
 }

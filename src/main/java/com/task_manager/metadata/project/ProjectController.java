@@ -1,5 +1,6 @@
 package com.task_manager.metadata.project;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.task_manager.metadata.project.models.ProjectCreateRequest;
 import com.task_manager.metadata.project.models.ProjectEntity;
 import com.task_manager.metadata.project.models.ProjectResponse;
@@ -23,6 +24,18 @@ public class ProjectController {
                 .ok(new ProjectsResponse(
                         projectService
                         .getAllProjectsByOrganizationName(organizationName)
+                                .stream()
+                                .map(ProjectEntity::toResponse)
+                                .toList()));
+    }
+
+    @GetMapping("/projects/user/{userId}")
+    public ResponseEntity<ProjectsResponse> getProjectByOrganizationNameAndUserId(@PathVariable("name") String organizationName,
+                                                                                 @PathVariable("userId") Long userId){
+        return ResponseEntity
+                .ok(new ProjectsResponse(
+                        projectService
+                                .getAllProjectsByOrganizationNameAndUserId(organizationName,userId)
                                 .stream()
                                 .map(ProjectEntity::toResponse)
                                 .toList()));

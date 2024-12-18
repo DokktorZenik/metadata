@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.slugify.Slugify;
 import com.task_manager.metadata.organization.OrgService;
 import com.task_manager.metadata.exception.ResourceNotFoundException;
+import com.task_manager.metadata.organization.models.OrgEntity;
 import com.task_manager.metadata.project.models.ProjectCreateRequest;
 import com.task_manager.metadata.project.models.ProjectEntity;
 import com.task_manager.metadata.project.models.ProjectUpdateRequest;
@@ -19,7 +20,9 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -50,8 +53,22 @@ public class ProjectService {
             ObjectNode retrieve = restClient.post().uri(userServiceUrl + endpoint).body(projectJsonObject).retrieve().toEntity(ObjectNode.class).getBody();
         }
         else{
-            ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/project/" + projectId + "/owner/" + ownerId).retrieve().toEntity(ObjectNode.class).getBody();
+            ObjectNode retrieve = restClient.delete().uri(userServiceUrl + endpoint + "/project/" + projectId).retrieve().toEntity(ObjectNode.class).getBody();
         }
+    }
+
+    public List<ProjectEntity> getUserProjects(Long userId){
+        ObjectNode result =  restClient.get().uri(userServiceUrl + "/v1/project/" + userId).retrieve().toEntity(ObjectNode.class).getBody();
+
+        JsonNode roles = result.get("_embedded").get("roles");
+        List<ProjectEntity> projs = new ArrayList<>();
+        if(roles.isArray()){
+            for(JsonNode proj : roles){
+                projs.add(projectRepository.findById(proj.get("projectId").asLong()).orElse(null));
+            }
+        }
+
+        return projs;
     }
 
 
@@ -62,9 +79,16 @@ public class ProjectService {
 
 
     public List<ProjectEntity> getAllProjectsByOrganizationName(String orgName) {
-        //TODO check if user in organization
 
         return projectRepository.findAllByOrgId(orgService.getOrgIdByName(orgName));
+
+    }
+
+    public List<ProjectEntity> getAllProjectsByOrganizationNameAndUserId(String orgName,Long userId) {
+
+        List<ProjectEntity> userProjects = getUserProjects(userId);
+        Long orgId = orgService.getOrgIdByName(orgName);
+        return userProjects.stream().filter(p -> Objects.equals(p.getOrgId(), orgId)).toList();
 
     }
 
@@ -84,7 +108,7 @@ public class ProjectService {
 
         ProjectEntity createdProject = projectRepository.save(projectCreateRequest.toEntity(orgId, projectName));
 
-//        sendRequest(createdProject.getId(), createdProject.getOwnerId(), "/v1/project/create", "POST");
+        sendRequest(createdProject.getId(), createdProject.getOwnerId(), "/v1/project/create", "POST");
 
         return createdProject;
     }
@@ -114,7 +138,7 @@ public class ProjectService {
 
         projectRepository.delete(projectEntity);
 
-//        sendRequest(projectEntity.getId(), projectEntity.getOwnerId(), "/v1/project/delete","DELETE");
+        sendRequest(projectEntity.getId(), projectEntity.getOwnerId(), "/v1/project/delete","DELETE");
     }
 
 }
